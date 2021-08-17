@@ -14,13 +14,7 @@ router.get("/", auth, async (req, res) => {
 
     try {
         const todos = await Todo.find({user})
-        if (todos.length === 0){
-            
-            res.send("no todos yet")
-        } else {
-            // console.log(todos)
             res.send(todos)
-        }
     } catch (err) {
         return res.status(500).json({message: err})
     }
@@ -32,7 +26,7 @@ router.post("/", auth, async (req, res) => {
         return res.status(401).json({message: "Unauthorized"})
     }
 
-    const {title, completed} = req.body;
+    const {title, completed, priority} = req.body;
     if (!title) {
         return res.status(400).json({message: "Please enter a title"})
     }
@@ -41,6 +35,7 @@ router.post("/", auth, async (req, res) => {
         const newTodo = await new Todo({
             title,
             completed,
+            priority,
             user
         });
 
@@ -68,6 +63,7 @@ router.put("/:id", auth, async (req, res) => {
             {
                 title: req.body.title, 
                 completed: req.body.completed,
+                priority: req.body.priority,
                 user
             }, (error, data) => {
             if (error){

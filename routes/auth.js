@@ -32,8 +32,13 @@ router.post("/register", async (req, res) => {
             password: hashedPassword
         });
 
-        await newUser.save();
-        return res.status(200).send(newUser)
+        const savedUser = await newUser.save();
+        // return res.status(200).send(newUser)
+        const token = jwt.sign({user: savedUser._id}, process.env.JWT_SECRET, {expiresIn: "1hr"});
+
+        res.cookie("token", token, {
+            httpOnly: true
+        }).send();
 
     } catch (err){
         console.log(err)
@@ -79,6 +84,20 @@ router.get("/logout", (req, res) => {
         httpOnly: true,
         expires: new Date(0)
     }).send();
+})
+
+router.get("/loggedin", (req, res) => {
+    try {
+        const token = req.cookies.token;
+
+        if (!token) return res.json(false);
+
+        const verified = jwt.verify(token, process.env.JWT_SECRET);
+        res.send(true)
+        } catch (err){
+        console.error(err);
+        res.send(false);
+    }
 })
 
 

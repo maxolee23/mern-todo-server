@@ -13,6 +13,9 @@ const todoSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    priority: {
+        type: String,
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
